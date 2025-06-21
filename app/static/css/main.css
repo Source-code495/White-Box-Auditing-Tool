@@ -1,0 +1,10 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 20px;
+}
