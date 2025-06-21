@@ -1,0 +1,391 @@
+{% extends "base/base.html" %}
+
+{% block styles %}
+<style>
+:root {
+  /* Color palette (Using Bootstrap 5 defaults and custom) */
+  --bs-primary:       #0d6efd;
+  --bs-primary-rgb:   59, 130, 246; /* Added for focus ring */
+  --bs-primary-dark:  #0b5ed7;
+  --bs-secondary:     #6c757d;
+  --bs-light:         #f8f9fa;
+  --bs-dark:          #212529;
+  --bs-success:       #198754;
+  --bs-white:         #ffffff;
+  --bs-border-color:  #dee2e6;
+  --bs-body-color:    #212529;
+  --bs-body-bg:       #f8f9fa;
+
+  /* Typography */
+  --bs-font-sans-serif: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Updated font */
+  --bs-body-font-size: 1rem;
+  --bs-body-font-weight: 400;
+  --bs-heading-font-weight: 600;
+
+  /* Spacing (Using Bootstrap spacers) */
+  --bs-spacer:        1rem;
+
+  /* Border radius */
+  --bs-border-radius:        0.375rem; /* Default BS5 radius */
+  --bs-border-radius-lg:     0.5rem;
+  --bs-border-radius-sm:     0.25rem;
+
+  /* Shadows */
+  --bs-box-shadow-sm:     0 .125rem .25rem rgba(0, 0, 0, .075);
+  --bs-box-shadow:        0 .5rem 1rem rgba(0, 0, 0, .15);
+  --bs-box-shadow-lg:     0 1rem 3rem rgba(0, 0, 0, .175);
+
+  /* Transitions */
+  --bs-transition-base:    all .2s ease-in-out;
+}
+
+body {
+  font-family: var(--bs-font-sans-serif);
+  font-size: var(--bs-body-font-size);
+  font-weight: var(--bs-body-font-weight);
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: calc(var(--bs-spacer) * 2) auto;
+  padding: 0 var(--bs-spacer);
+}
+
+.card {
+  background-color: var(--bs-white);
+  border: none;
+  border-radius: var(--bs-border-radius-lg);
+  box-shadow: var(--bs-box-shadow); /* Softer default shadow */
+  overflow: hidden;
+}
+
+.card-header {
+  background-color: var(--bs-primary);
+  color: var(--bs-white);
+  padding: var(--bs-spacer) calc(var(--bs-spacer) * 1.5);
+  border-bottom: none;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-weight: var(--bs-heading-font-weight);
+  font-size: 1.25rem;
+}
+
+.card-body {
+  padding: calc(var(--bs-spacer) * 1.5);
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: calc(var(--bs-spacer) * 0.5);
+  font-size: 0.9rem;
+}
+
+.form-label.h5 {
+  font-size: 1.1rem;
+  font-weight: var(--bs-heading-font-weight);
+  margin-bottom: var(--bs-spacer);
+  color: var(--bs-dark);
+}
+
+/* --- File Input Styling (Assuming BS5 form-control) --- */
+.form-control[type="file"] {
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  padding: calc(var(--bs-spacer) * 0.5) calc(var(--bs-spacer) * 0.75);
+  transition: var(--bs-transition-base);
+}
+
+.form-control[type="file"]:hover {
+  border-color: var(--bs-primary);
+}
+
+.form-text {
+  font-size: 0.875rem;
+  color: var(--bs-secondary);
+  margin-top: calc(var(--bs-spacer) * 0.25);
+}
+
+/* --- Button Styling --- */
+.btn-success {
+  /* Use Bootstrap defaults, maybe enhance hover */
+  transition: var(--bs-transition-base);
+}
+
+.btn-success:hover {
+  filter: brightness(90%); /* Simple hover effect */
+  box-shadow: var(--bs-box-shadow-sm);
+}
+
+/* --- Attack Parameter Card Improvements --- */
+.attack-param-card {
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  margin-bottom: var(--bs-spacer); /* Consistent spacing */
+  transition: var(--bs-transition-base);
+  background-color: var(--bs-white);
+  box-shadow: var(--bs-box-shadow-sm); /* Subtle shadow */
+}
+
+.attack-param-card:hover {
+  border-color: rgba(var(--bs-primary-rgb), 0.5); /* Primary border on hover */
+  box-shadow: var(--bs-box-shadow); /* Slightly larger shadow on hover */
+}
+
+/* Header part of the attack card (checkbox + label) */
+.attack-param-card .form-check {
+  padding: calc(var(--bs-spacer) * 0.75) calc(var(--bs-spacer) * 1.25); /* More padding */
+  display: flex; /* Align checkbox and label */
+  align-items: center;
+  /* cursor: pointer; */ /* Removed as JS handles toggle */
+}
+
+.attack-checkbox { /* Renamed from form-check-input for clarity */
+  width: 1.15em; /* Slightly larger checkbox */
+  height: 1.15em;
+  margin-top: 0; /* Reset margin */
+  margin-right: calc(var(--bs-spacer) * 0.75); /* Space between checkbox and label */
+  accent-color: var(--bs-primary);
+  cursor: pointer;
+  flex-shrink: 0; /* Prevent checkbox from shrinking */
+}
+
+.attack-checkbox:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25); /* Bootstrap focus ring */
+}
+
+.attack-param-card .form-check-label {
+  cursor: pointer; /* Keep cursor pointer on label */
+  font-weight: 500; /* Clearer label text */
+  font-size: 1rem; /* Standard text size */
+  flex-grow: 1; /* Allow label to take remaining space */
+  margin-bottom: 0; /* Reset margin */
+}
+
+/* Collapsible parameter section */
+.attack-params {
+  /* margin-top: 0; */ /* Removed top margin */
+  padding: var(--bs-spacer) calc(var(--bs-spacer) * 1.25) calc(var(--bs-spacer) * 1.25); /* Consistent padding */
+  /* border-left: none; */ /* Removed left border */
+  border-top: 1px solid var(--bs-border-color); /* Use top border instead */
+  background-color: #fdfdff; /* Very slightly off-white background */
+  border-bottom-left-radius: var(--bs-border-radius); /* Match card radius */
+  border-bottom-right-radius: var(--bs-border-radius);
+  display: none; /* Keep hidden by default for JS toggle */
+}
+
+/* Style when shown by JS */
+.attack-params.collapse.show { /* Bootstrap adds .show, but JS uses display:block */
+    display: block; /* Ensure JS toggle works */
+}
+
+/* Input fields within attack params */
+.attack-params .form-control {
+  font-size: 0.9rem; /* Slightly smaller inputs */
+  padding: calc(var(--bs-spacer) * 0.4) calc(var(--bs-spacer) * 0.6);
+}
+
+/* --- End Attack Parameter Card Improvements --- */
+
+
+@media (max-width: 576px) {
+  .card-body {
+    padding: var(--bs-spacer);
+  }
+  .attack-param-card .form-check {
+    padding: calc(var(--bs-spacer) * 0.5) var(--bs-spacer);
+  }
+   .attack-params {
+    padding: var(--bs-spacer);
+  }
+  .form-label.h5 {
+    font-size: 1rem;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-lg">
+    <div class="card-header">
+      <h3 class="mb-0">Adversarial Analysis Platform</h3>
+    </div>
+    <div class="card-body">
+      <form id="uploadForm" method="POST" enctype="multipart/form-data"
+            action="{{ url_for('analysis.handle_file_upload') }}">
+
+        <!-- Model Upload -->
+        <div class="mb-4">
+          <label class="form-label h5">Upload Model</label>
+          <div class="custom-file">
+            <input type="file" class="form-control" id="model" name="model"
+                   accept=".pth,.pt" required>
+            <div id="modelStatus" class="form-text"></div>
+          </div>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="mb-4">
+          <label class="form-label h5">Upload Images</label>
+          <div class="custom-file">
+            <input type="file" class="form-control" id="images" name="images"
+                   multiple accept="image/*" required>
+            <div id="imageStatus" class="form-text"></div>
+          </div>
+        </div>
+
+        <!-- Attack Selection -->
+        <div class="mb-4">
+          <label class="form-label h5">Select Attacks</label>
+          <div class="attack-params-container">
+
+            <!-- FGSM -->
+            <div class="attack-param-card">
+              <div class="form-check">
+                <input class="form-check-input attack-checkbox" type="checkbox"
+                       name="attacks" value="FGSM" id="fgsm" data-target="#fgsmParams">
+                <label class="form-check-label" for="fgsm">FGSM</label>
+              </div>
+              <div id="fgsmParams" class="attack-params collapse">
+                <div class="row g-2 mt-2">
+                  <div class="col-md-6">
+                    <label class="form-label">Epsilon (ε)</label>
+                    <input type="number" class="form-control" name="fgsm_eps"
+                           step="0.01" min="0" max="1" value="0.1">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PGD -->
+            <div class="attack-param-card">
+              <div class="form-check">
+                <input class="form-check-input attack-checkbox" type="checkbox"
+                       name="attacks" value="PGD" id="pgd" data-target="#pgdParams">
+                <label class="form-check-label" for="pgd">PGD</label>
+              </div>
+              <div id="pgdParams" class="attack-params collapse">
+                <div class="row g-2 mt-2">
+                  <div class="col-md-4">
+                    <label class="form-label">Epsilon (ε)</label>
+                    <input type="number" class="form-control" name="pgd_eps"
+                           step="0.01" min="0" max="1" value="0.1">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Step Size</label>
+                    <input type="number" class="form-control" name="pgd_step"
+                           step="0.01" min="0" max="0.1" value="0.01">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Iterations</label>
+                    <input type="number" class="form-control" name="pgd_iters"
+                           min="1" max="100" value="40">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CW -->
+            <div class="attack-param-card">
+              <div class="form-check">
+                <input class="form-check-input attack-checkbox" type="checkbox"
+                       name="attacks" value="CW" id="cw" data-target="#cwParams">
+                <label class="form-check-label" for="cw">Carlini-Wagner</label>
+              </div>
+              <div id="cwParams" class="attack-params collapse">
+                <div class="row g-2 mt-2">
+                  <div class="col-md-6">
+                    <label class="form-label">Confidence</label>
+                    <input type="number" class="form-control" name="cw_confidence"
+                           step="0.1" min="0" value="0">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Learning Rate</label>
+                    <input type="number" class="form-control" name="cw_lr"
+                           step="0.001" min="0" value="0.01">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- UAP -->
+            <div class="attack-param-card">
+              <div class="form-check">
+                <input class="form-check-input attack-checkbox" type="checkbox"
+                       name="attacks" value="UAP" id="uap" data-target="#uapParams">
+                <label class="form-check-label" for="uap">UAP</label>
+              </div>
+              <div id="uapParams" class="attack-params collapse">
+                <div class="row g-2 mt-2">
+                  <div class="col-md-6">
+                    <label class="form-label">Delta</label>
+                    <input type="number" class="form-control" name="uap_delta"
+                           step="0.1" min="0" max="1" value="0.2">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Max Iterations</label>
+                    <input type="number" class="form-control" name="uap_iters"
+                           min="1" max="100" value="20">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-lg w-100">
+          Analyze Images <i class="bi bi-arrow-right-circle ms-2"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Toggle parameter visibility (using existing JS logic)
+  document.querySelectorAll('.attack-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', (e) => {
+      const target = document.querySelector(e.target.dataset.target);
+      if (target) { // Check if target exists
+          target.style.display = e.target.checked ? 'block' : 'none';
+          // Optionally add/remove Bootstrap's 'show' class if needed elsewhere,
+          // but display style is sufficient for this JS logic.
+          // if (e.target.checked) {
+          //     target.classList.add('show');
+          // } else {
+          //     target.classList.remove('show');
+          // }
+      }
+    });
+    // Initialize visibility based on initial checked state
+    const initialTarget = document.querySelector(checkbox.dataset.target);
+    if (initialTarget) {
+        initialTarget.style.display = checkbox.checked ? 'block' : 'none';
+    }
+  });
+
+  // Validate at least one attack selected
+  document.getElementById('uploadForm').addEventListener('submit', (e) => {
+    if (document.querySelectorAll('.attack-checkbox:checked').length === 0) {
+      alert('Please select at least one attack method!');
+      e.preventDefault();
+    }
+  });
+});
+
+// Optional dynamic additionalParams logic (if you ever use a single-select attackType)
+// ... (rest of the script remains unchanged) ...
+</script>
+{% endblock %}

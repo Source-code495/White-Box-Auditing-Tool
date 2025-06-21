@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Adversarial Attack Analysis{% endblock %}</title>
+
+  <!-- Bootstrap 4.3.1 CSS -->
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384‑ggOyR0iXCbMQv3Xipma34MD+dH/1fQ775/x6CNIvH+Yd1nQK7PWQJ8SkYl+IfFJ"
+    crossorigin="anonymous"
+  />
+
+  <!-- Your main.css (if any) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+
+  <!-- Theme‑driven Custom Styles -->
+  <style>
+    /*── Theme Variables ─────────────────────────────────────────────────────────*/
+    :root {
+      --clr-primary:     #2c3e50;
+      --clr-primary-dark:#1f2a38;
+      --clr-accent:      #3498db;
+      --clr-light:       #f8f9fa;
+      --clr-dark:        #2d3436;
+      --clr-text:        #343a40;
+      --clr-muted:       #6c757d;
+
+      --font-base:       'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --transition-fast: 0.2s ease-in-out;
+      --radius-sm:       0.25rem;
+      --radius-md:       0.5rem;
+      --shadow-sm:       0 1px 3px rgba(0,0,0,0.1);
+      --shadow-md:       0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    /*── Base Styles ────────────────────────────────────────────────────────────*/
+    body {
+      font-family: var(--font-base);
+      background-color: var(--clr-light);
+      color: var(--clr-text);
+      margin: 0;
+      padding: 0;
+    }
+    a {
+      transition: color var(--transition-fast);
+    }
+    a:hover {
+      text-decoration: none;
+      color: var(--clr-accent);
+    }
+
+    /*── Navbar ─────────────────────────────────────────────────────────────────*/
+    .navbar {
+      background-color: var(--clr-primary);
+      box-shadow: var(--shadow-md);
+      padding: 0.5rem 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 1030;
+      transition: background-color var(--transition-fast);
+    }
+    .navbar:hover {
+      background-color: var(--clr-primary-dark);
+    }
+    .navbar-brand {
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: var(--clr-light) !important;
+      display: flex;
+      align-items: center;
+    }
+    .navbar-brand i {
+      margin-right: 0.5rem;
+      font-size: 1.5rem;
+    }
+    .navbar-nav .nav-link {
+      color: var(--clr-light) !important;
+      margin-left: 1rem;
+      font-weight: 500;
+    }
+    .navbar-nav .nav-link:hover {
+      color: var(--clr-accent) !important;
+    }
+
+    /*── Container ─────────────────────────────────────────────────────────────*/
+    .container {
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    /*── Utility Overrides ─────────────────────────────────────────────────────*/
+    .card {
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow var(--transition-fast);
+    }
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    .btn-primary {
+      background-color: var(--clr-accent);
+      border-color: var(--clr-accent);
+      transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .btn-primary:hover {
+      background-color: darken(var(--clr-accent), 10%);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /*── Responsive Adjustments ────────────────────────────────────────────────*/
+    @media (max-width: 576px) {
+      .navbar {
+        padding: 0.5rem 0.75rem;
+      }
+      .navbar-brand {
+        font-size: 1.125rem;
+      }
+      .navbar-brand i {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+
+  {% block styles %}{% endblock %}
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('main.index') }}">
+        <i class="bi bi-shield-shaded"></i>
+        Adversarial Analysis
+      </a>
+      <!-- Example nav links (uncomment if needed) -->
+      <!--
+      <button class="navbar-toggler" type="button" data-toggle="collapse"
+              data-target="#navMenu" aria-controls="navMenu"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Reports</a></li>
+        </ul>
+      </div>
+      -->
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Bootstrap & dependencies -->
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384‑q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous">
+  </script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384‑UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous">
+  </script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384‑JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous">
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

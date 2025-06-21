@@ -1,0 +1,472 @@
+{% extends "base/base.html" %}
+
+{% block styles %}
+<style>
+  /*── Theme Variables (Using Bootstrap 5 conventions) ───────────────────────*/
+  :root {
+    /* Inherit Bootstrap variables, define custom ones if needed */
+    --bs-body-bg: #f8fafc; /* Example: Light background */
+    --bs-body-color: #1e293b; /* Example: Darker text */
+
+    /* Custom colors for specific elements */
+    --clr-mismatch-bg:    #e0f2fe; /* Tailwind Sky 100 / Light Info */
+    --clr-mismatch-hover: #bae6fd; /* Tailwind Sky 200 */
+    --clr-same-class-bg:  #fee2e2; /* Tailwind Red 100 / Light Danger */
+    --clr-same-class-hover:#fecaca; /* Tailwind Red 200 */
+
+    /* Reusable properties */
+    --radius:             var(--bs-border-radius, 0.5rem); /* Use Bootstrap radius or default */
+    --radius-sm:          var(--bs-border-radius-sm, 0.25rem);
+    --shadow:             var(--bs-box-shadow, 0 4px 6px rgba(0,0,0,0.1));
+    --shadow-sm:          var(--bs-box-shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
+    --shadow-lg:          var(--bs-box-shadow-lg, 0 10px 15px rgba(0,0,0,0.1));
+    --transition-fast:    0.2s ease-in-out;
+    --transition-slow:    0.3s ease-in-out;
+  }
+
+  /*── Base Styles ────────────────────────────────────────────────────────────*/
+  /* Body styles are likely inherited from base.html, add overrides if needed */
+  h3, h4 {
+    /* Use Bootstrap heading classes or customize */
+    font-weight: 600;
+    margin-bottom: 1.5rem; /* More space below headings */
+    color: var(--bs-dark, #212529);
+  }
+
+  .container {
+    padding-top: 2rem; /* Use padding instead of margin for container */
+    padding-bottom: 3rem;
+  }
+
+  /*── Alerts ─────────────────────────────────────────────────────────────────*/
+  /* Enhance default Bootstrap alerts if needed */
+  .alert {
+    box-shadow: var(--shadow-sm);
+    border-left-width: 4px; /* Add a thicker left border */
+    border-radius: var(--radius-sm);
+  }
+  .alert-info {
+      border-left-color: var(--bs-info);
+  }
+   .alert-secondary {
+      border-left-color: var(--bs-secondary);
+  }
+   .alert-warning {
+      border-left-color: var(--bs-warning);
+  }
+
+  /*── Cards ──────────────────────────────────────────────────────────────────*/
+  .card {
+    border: none; /* Override Bootstrap default border */
+    box-shadow: var(--shadow);
+    transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+    border-radius: var(--radius);
+    height: 100%; /* Ensure cards in a row have same height */
+    margin-bottom: 1.5rem; /* Consistent spacing */
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px); /* Lift effect */
+  }
+
+  .card-header {
+    font-weight: 600;
+    border-bottom: none;
+    padding: 1rem 1.25rem;
+    border-top-left-radius: var(--radius); /* Ensure radius matches card */
+    border-top-right-radius: var(--radius);
+  }
+  /* Let Bootstrap handle bg-* colors, add overrides if needed */
+  .card-header.bg-info { color: white; } /* Ensure text contrast */
+  .card-header.bg-primary { color: white; }
+  .card-header.bg-dark { color: white; }
+  .card-header.bg-secondary { color: white; }
+  .card-header.text-dark { color: var(--bs-dark) !important; } /* Override for light headers */
+
+
+  /*── Tabs ───────────────────────────────────────────────────────────────────*/
+  .nav-tabs {
+    border-bottom: 2px solid var(--bs-border-color); /* Thicker bottom border */
+    margin-bottom: 2rem; /* More space below tabs */
+  }
+
+  .nav-tabs .nav-link {
+    border: none; /* Remove default borders */
+    border-bottom: 2px solid transparent; /* Use bottom border for active state */
+    margin-bottom: -2px; /* Align with main border */
+    padding: 0.75rem 1.25rem;
+    color: var(--bs-secondary); /* Muted color for inactive */
+    font-weight: 500;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+    border-top-left-radius: var(--radius-sm); /* Slight radius */
+    border-top-right-radius: var(--radius-sm);
+  }
+
+  .nav-tabs .nav-link:hover:not(.active) {
+    color: var(--bs-primary);
+    border-bottom-color: var(--bs-border-color); /* Subtle hover indicator */
+  }
+
+  .nav-tabs .nav-link.active {
+    color: var(--bs-primary);
+    font-weight: 600;
+    border-bottom-color: var(--bs-primary);
+    background-color: transparent; /* Ensure no background */
+  }
+
+  /*── Tables ─────────────────────────────────────────────────────────────────*/
+  .table {
+    border-collapse: separate; /* Allows border-radius on rows/table */
+    border-spacing: 0;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--radius);
+    overflow: hidden; /* Clip content to rounded corners */
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 0; /* Remove default margin */
+  }
+
+  .table thead {
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+    vertical-align: middle;
+  }
+
+  .table th,
+  .table td {
+      padding: 0.85rem 1rem; /* Slightly more padding */
+      vertical-align: middle;
+  }
+
+  .table-hover > tbody > tr:hover {
+    /* Use custom hover colors defined below */
+  }
+
+  /* Specific row styling for predictions */
+  .prediction-row {
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+    border-left: 4px solid transparent; /* Indicator space */
+  }
+
+  .mismatch {
+    background-color: var(--clr-mismatch-bg);
+    border-left-color: var(--bs-info);
+  }
+
+  .same-class {
+    background-color: var(--clr-same-class-bg);
+    border-left-color: var(--bs-danger);
+  }
+
+  .mismatch:hover {
+    background-color: var(--clr-mismatch-hover);
+  }
+
+  .same-class:hover {
+    background-color: var(--clr-same-class-hover);
+  }
+
+  /* Style for the collapsed row content */
+  .collapse > td {
+      padding: 0 !important; /* Remove padding from the td */
+  }
+  .collapse .row {
+      background-color: var(--bs-light); /* Use light background */
+      margin: 0;
+      padding: 1.5rem 0; /* Add padding inside the row */
+      border-top: 1px solid var(--bs-border-color); /* Separator line */
+  }
+
+
+  /*── Image Previews ─────────────────────────────────────────────────────────*/
+  .img-preview {
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--radius-sm);
+    transition: transform var(--transition-slow), box-shadow var(--transition-fast);
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto 0.5rem auto; /* Center and add space below */
+    box-shadow: var(--shadow-sm);
+  }
+
+  .img-preview:hover {
+    transform: scale(1.04); /* Slightly larger scale */
+    box-shadow: var(--shadow);
+    border-color: var(--bs-secondary);
+  }
+
+  /*── Gemini Analysis / Markdown Content ───────────────────────────────────*/
+  .card-body.markdown {
+    line-height: 1.7; /* Improve readability */
+  }
+
+  .card-body.markdown h1,
+  .card-body.markdown h2,
+  .card-body.markdown h3,
+  .card-body.markdown h4,
+  .card-body.markdown h5,
+  .card-body.markdown h6 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: var(--bs-dark);
+  }
+  .card-body.markdown h5 { font-size: 1.1rem; } /* Slightly smaller h5 */
+
+  .card-body.markdown p {
+    margin-bottom: 1.1rem;
+  }
+
+  .card-body.markdown ul,
+  .card-body.markdown ol {
+      padding-left: 1.75rem; /* More indentation */
+      margin-bottom: 1.1rem;
+  }
+
+  .card-body.markdown code {
+      background-color: var(--bs-light); /* Use light background */
+      border: 1px solid var(--bs-border-color);
+      padding: 0.2em 0.4em;
+      border-radius: var(--radius-sm);
+      font-size: 0.875em;
+      color: var(--bs-danger); /* Use danger color for code */
+  }
+
+  .card-body.markdown pre {
+      background-color: var(--bs-dark);
+      color: var(--bs-light);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      margin-bottom: 1.1rem;
+  }
+   .card-body.markdown pre code {
+      background-color: transparent; /* Reset background */
+      border: none;
+      padding: 0;
+      color: inherit; /* Inherit color from pre */
+      font-size: inherit;
+   }
+
+  .card-body.markdown blockquote {
+      border-left: 4px solid var(--bs-border-color);
+      padding-left: 1rem;
+      margin-left: 0;
+      margin-bottom: 1.1rem;
+      color: var(--bs-secondary);
+      font-style: italic;
+  }
+
+  /*── Utility ────────────────────────────────────────────────────────────────*/
+  /* Add small text utility if needed */
+  .text-small {
+      font-size: 0.875rem;
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Debug info -->
+  <div class="alert alert-info mb-3">
+    <p><strong>Available attacks:</strong> {{ attacks|join(', ') }}</p>
+  </div>
+
+  <!-- Attack Summary -->
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white">
+      <h4 class="mb-0">Attack Parameters Summary</h4>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        {% for attack in attacks %}
+        <div class="col-md-3 mb-3">
+          <div class="card h-100">
+            <div class="card-header">{{ attack }}</div>
+            <div class="card-body">
+              <ul class="list-unstyled mb-0">
+                {% for name, val in all_results[attack][0]['attack_params'].items() %}
+                <li><strong>{{ name }}:</strong> {{ val }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Attack Tabs -->
+  <ul class="nav nav-tabs" id="attackTabs" role="tablist">
+    {% for attack in attacks %}
+    <li class="nav-item" role="presentation">
+      <button class="nav-link {% if loop.first %}active{% endif %}"
+              id="tab-{{ attack }}" data-bs-toggle="tab"
+              data-bs-target="#content-{{ attack }}"
+              type="button" role="tab"
+              aria-controls="content-{{ attack }}"
+              aria-selected="{% if loop.first %}true{% else %}false{% endif %}">
+        {{ attack }} Analysis
+      </button>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <div class="tab-content" id="attackTabsContent">
+    {% for attack in attacks %}
+    <div class="tab-pane fade {% if loop.first %}show active{% endif %}"
+         id="content-{{ attack }}" role="tabpanel"
+         aria-labelledby="tab-{{ attack }}">
+
+      <!-- Header -->
+      <div class="alert alert-secondary mb-3">
+        <h4 class="mb-0">Analysis for: {{ attack }}</h4>
+      </div>
+
+      <!-- Visualizations -->
+      <div class="row mb-4">
+        {% for plot in ['pie','hist','matrix'] %}
+        <div class="col-md-4 mb-3">
+          <div class="card h-100">
+            <div class="card-header text-center text-dark text-capitalize">
+              {{ {'pie':'Attack Success Rate','hist':'Confidence Distribution','matrix':'Class Change Matrix'}[plot] }}
+            </div>
+            <div class="card-body d-flex justify-content-center align-items-center">
+              <img src="{{ all_plots[attack][plot] }}" class="img-fluid" alt="{{ plot }}">
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Class Stats -->
+      <div class="row mb-4">
+        <div class="col-12"><h3>Class Statistics for {{ attack }}</h3></div>
+        {% for cls, stats in all_class_stats[attack].items() %}
+        <div class="col-md-4 mb-3">
+          <div class="card h-100">
+            <div class="card-header bg-primary text-white">{{ cls }}</div>
+            <div class="card-body">
+              <p>Total: {{ stats.total }}</p>
+              <p>Success Rate: {{ (stats.success_count / stats.total * 100)|round(1) }}%</p>
+              <h6>Top Adversarial Classes:</h6>
+              <ul class="mb-0">
+                {% for target, cnt in stats.top_adversarial %}
+                <li>{{ target }} ({{ cnt }})</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Detailed Predictions -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <h3 class="text-center mb-4">Detailed Predictions for {{ attack }}</h3>
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Original Class</th>
+                <th>Adversarial Class</th>
+                <th>Confidence Change</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in all_results[attack] %}
+              <tr class="prediction-row {% if item.original_class==item.adv_class %}same-class{% else %}mismatch{% endif %}"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapse-{{ attack }}-{{ loop.index }}">
+                <td>{{ item.original }}</td>
+                <td>
+                  <strong>{{ item.original_class }}</strong><br>
+                  <small>{{ '%.2f'%(item.original_confidence*100) }}%</small>
+                </td>
+                <td>
+                  <strong>{{ item.adv_class }}</strong><br>
+                  <small>{{ '%.2f'%(item.adv_confidence*100) }}%</small>
+                </td>
+                <td class="{% if item.original_confidence>item.adv_confidence %}text-success{% else %}text-danger{% endif %}">
+                  {{ '%+.2f'%((item.adv_confidence-item.original_confidence)*100) }}%
+                </td>
+              </tr>
+              <tr class="collapse" id="collapse-{{ attack }}-{{ loop.index }}">
+                <td colspan="4">
+                  <div class="row justify-content-center py-3">
+                    <div class="col-md-5 text-center">
+                      <h5>Original Image</h5>
+                      <img src="/uploads/{{ session_id }}/{{ item.original }}" class="img-preview img-fluid" alt="orig">
+                    </div>
+                    <div class="col-md-5 text-center">
+                      <h5>Adversarial Image</h5>
+                      <img src="/uploads/{{ session_id }}/{{ item.adversarial }}" class="img-preview img-fluid" alt="adv">
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Gemini Report -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+              <h3 class="mb-0">Security Analysis Report ({{ attack }})</h3>
+            </div>
+            <div class="card-body markdown">
+              {% if gemini_analysis[attack] %}
+                {{ gemini_analysis[attack]|markdown|safe }}
+              {% else %}
+                <div class="alert alert-warning mb-0">
+                  No analysis available for {{ attack }}.
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Tab switching
+    document.querySelectorAll('#attackTabs button[data-bs-toggle="tab"]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(btn.getAttribute('data-bs-target'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('show','active'));
+        document.querySelectorAll('#attackTabs .nav-link').forEach(n => {
+          n.classList.remove('active');
+          n.setAttribute('aria-selected','false');
+        });
+        btn.classList.add('active'); btn.setAttribute('aria-selected','true');
+        target.classList.add('show','active');
+      });
+    });
+
+    // Collapse rows
+    document.querySelectorAll('.prediction-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const c = document.querySelector(row.dataset.bsTarget);
+        c.classList.toggle('show');
+      });
+    });
+  });
+</script>
+{% endblock %}
